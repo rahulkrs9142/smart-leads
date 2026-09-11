@@ -112,8 +112,8 @@ A full-stack **Lead Management Dashboard** built with the **MERN stack** (MongoD
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Amcodeit/smart-lead.git
-cd smart-lead
+git clone https://github.com/rahulkrs9142/smart-leads.git
+cd smart-leads
 ```
 
 ### 2. Setup Backend
@@ -268,6 +268,6 @@ cd client && npm run dev
 
 <div align="center">
 
-Built with ❤️ by [Amcodeit](https://github.com/Amcodeit)
+Built with ❤️ by [Rahul Kumar](https://github.com/rahulkrs9142)
 
 </div>

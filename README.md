@@ -3,6 +3,7 @@
 <div align="center">
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-smart--lead--client.vercel.app-6366f1?style=for-the-badge)](https://smart-lead-client.vercel.app)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/rahulkrs9142/smart-leads/actions)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -152,6 +153,8 @@ This project is deployed using a split architecture:
 | **Frontend** | [Vercel](https://vercel.com) | Root dir: `client`, auto-deploys on push |
 | **Backend** | [Render](https://render.com) | Docker-based, root dir: `server` |
 | **Database** | [MongoDB Atlas](https://mongodb.com/cloud/atlas) | Free M0 cluster |
+
+> 📖 **Full Guide**: For step-by-step instructions, Docker orchestration, and cloud configurations, refer to the [Deployment Guide](./DEPLOYMENT.md).
 
 ### Required Environment Variables
 

@@ -5,13 +5,19 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import leadRoutes from './routes/leadRoutes';
+import docsRoutes from './routes/docsRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
+import { securityHeaders } from './middleware/security';
+import { authRateLimiter } from './middleware/rateLimiter';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Security headers
+app.use(securityHeaders);
 
 // CORS configuration
 const allowedOrigins = [
@@ -49,14 +55,23 @@ if (process.env.NODE_ENV !== 'production') {
 app.get('/api/health', (_req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Smart Leads API is running',
+    message: 'Smart Leads API is operational',
     environment: process.env.NODE_ENV || 'development',
+    uptime: Math.round(process.uptime()),
+    memory: {
+      rss: `${Math.round(process.memoryUsage().rss / 1024 / 1024)}MB`,
+      heapTotal: `${Math.round(process.memoryUsage().heapTotal / 1024 / 1024)}MB`,
+      heapUsed: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
+    },
     timestamp: new Date().toISOString(),
   });
 });
 
+// Interactive API Documentation
+app.use('/api/docs', docsRoutes);
+
 // API Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/leads', leadRoutes);
 
 // Error handling

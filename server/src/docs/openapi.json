@@ -1,0 +1,300 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SmartLeads API Documentation",
+    "version": "1.0.0",
+    "description": "Comprehensive REST API specification for the SmartLeads Lead Management Dashboard. Built with Node.js, Express, TypeScript, and MongoDB.",
+    "contact": {
+      "name": "Rahul Kumar",
+      "url": "https://github.com/rahulkrs9142/smart-leads"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://smart-leads-backend.onrender.com",
+      "description": "Render Production Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your JWT token in the format: Bearer <token>"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string", "example": "66e2c345a610f92b74052301" },
+          "name": { "type": "string", "example": "Rahul Kumar" },
+          "email": { "type": "string", "format": "email", "example": "rahul@example.com" },
+          "role": { "type": "string", "enum": ["admin", "sales"], "example": "admin" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Lead": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string", "example": "66e2c345a610f92b74052302" },
+          "name": { "type": "string", "example": "Acme Corp Lead" },
+          "email": { "type": "string", "format": "email", "example": "contact@acme.com" },
+          "status": {
+            "type": "string",
+            "enum": ["New", "Contacted", "Qualified", "Lost"],
+            "example": "New"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["Website", "Instagram", "Referral"],
+            "example": "Website"
+          },
+          "assignedTo": { "type": "string", "example": "66e2c345a610f92b74052301" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "currentPage": { "type": "integer", "example": 1 },
+          "totalPages": { "type": "integer", "example": 5 },
+          "totalRecords": { "type": "integer", "example": 45 },
+          "limit": { "type": "integer", "example": 10 },
+          "hasNextPage": { "type": "boolean", "example": true },
+          "hasPrevPage": { "type": "boolean", "example": false }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Operation successful" },
+          "data": { "type": "object" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Error description" },
+          "errors": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health Check & System Status",
+        "description": "Returns uptime, environment, memory metrics, and API status",
+        "responses": {
+          "200": {
+            "description": "API is healthy and operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Smart Leads API is operational" },
+                    "environment": { "type": "string", "example": "development" },
+                    "uptime": { "type": "number", "example": 3600 },
+                    "memory": { "type": "object" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Creates a new user account with bcrypt password hashing and returns a JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": { "type": "string", "example": "John Doe" },
+                  "email": { "type": "string", "format": "email", "example": "john@example.com" },
+                  "password": { "type": "string", "minLength": 6, "example": "SecurePass123!" },
+                  "role": { "type": "string", "enum": ["admin", "sales"], "default": "sales" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Validation error or email already exists" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Authenticate user & get JWT token",
+        "description": "Verifies email and password, returning an access token and user profile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "john@example.com" },
+                  "password": { "type": "string", "example": "SecurePass123!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authentication successful" },
+          "401": { "description": "Invalid email or password" }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Get authenticated user profile",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Profile retrieved successfully" },
+          "401": { "description": "Unauthorized - Missing or invalid token" }
+        }
+      }
+    },
+    "/api/leads": {
+      "get": {
+        "summary": "List and filter leads",
+        "description": "Supports pagination, status filtering, source filtering, and text search across lead name and email",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["New", "Contacted", "Qualified", "Lost"] } },
+          { "name": "source", "in": "query", "schema": { "type": "string", "enum": ["Website", "Instagram", "Referral"] } },
+          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Search keyword for name or email" },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["latest", "oldest"] } }
+        ],
+        "responses": {
+          "200": { "description": "Leads retrieved with pagination metadata" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "post": {
+        "summary": "Create a new lead",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "source"],
+                "properties": {
+                  "name": { "type": "string", "example": "Tech Corp Lead" },
+                  "email": { "type": "string", "format": "email", "example": "lead@techcorp.com" },
+                  "source": { "type": "string", "enum": ["Website", "Instagram", "Referral"], "example": "Website" },
+                  "status": { "type": "string", "enum": ["New", "Contacted", "Qualified", "Lost"], "default": "New" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Lead created successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/leads/{id}": {
+      "get": {
+        "summary": "Get single lead details",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Lead retrieved successfully" },
+          "404": { "description": "Lead not found" }
+        }
+      },
+      "put": {
+        "summary": "Update lead details",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "status": { "type": "string", "enum": ["New", "Contacted", "Qualified", "Lost"] },
+                  "source": { "type": "string", "enum": ["Website", "Instagram", "Referral"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Lead updated successfully" },
+          "404": { "description": "Lead not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete lead (Admin only)",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Lead deleted successfully" },
+          "403": { "description": "Forbidden - Admin access required" },
+          "404": { "description": "Lead not found" }
+        }
+      }
+    },
+    "/api/leads/export/csv": {
+      "get": {
+        "summary": "Export leads to CSV file",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "source", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file stream",
+            "content": { "text/csv": {} }
+          }
+        }
+      }
+    },
+    "/api/leads/stats/overview": {
+      "get": {
+        "summary": "Get dashboard lead overview statistics",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Metrics including total leads, status breakdown, and source distribution"
+          }
+        }
+      }
+    }
+  }
+}

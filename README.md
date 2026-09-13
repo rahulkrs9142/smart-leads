@@ -4,6 +4,8 @@
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-smart--lead--client.vercel.app-6366f1?style=for-the-badge)](https://smart-lead-client.vercel.app)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/rahulkrs9142/smart-leads/actions)
+[![API Docs](https://img.shields.io/badge/OpenAPI_3.0-Interactive_Docs-85EA2D?style=for-the-badge&logo=openapiinitiative&logoColor=black)](https://smart-leads-backend.onrender.com/api/docs)
+[![Tests](https://img.shields.io/badge/Tests-Passing_22%2F22-success?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/rahulkrs9142/smart-leads)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -28,6 +30,7 @@ A full-stack **Lead Management Dashboard** built with the **MERN stack** (MongoD
 |---------|-----|
 | **Frontend** | [smart-lead-client.vercel.app](https://smart-lead-client.vercel.app) |
 | **Backend API** | Hosted on Render |
+| **API Documentation** | `/api/docs` (Interactive OpenAPI 3.0 Reference) |
 | **Database** | MongoDB Atlas |
 
 > 💡 **Test Credentials** — Register a new account directly on the live site.
@@ -45,6 +48,9 @@ A full-stack **Lead Management Dashboard** built with the **MERN stack** (MongoD
 - **Debounced Search** — 400ms debounce on search input
 - **CSV Export** — Export filtered leads as CSV
 - **Dark Mode** — System-preference-aware with manual toggle
+- **Security & Rate Limiting** — Brute-force protection on auth endpoints + defensive security headers
+- **Automated Tests** — Unit & integration test suites for Auth, RBAC, Validators, and Security
+- **Interactive API Docs** — OpenAPI 3.0 specification rendered via Scalar at `/api/docs`
 
 ### UI/UX
 - Premium glassmorphism design with gradient accents
@@ -191,6 +197,8 @@ Copy `.env.example` and configure:
 
 ## 📡 API Documentation
 
+> 📖 **Interactive Swagger / Scalar Documentation**: Visit `/api/docs` when running the backend to interactively explore and test all endpoints directly in the browser! Raw OpenAPI 3.0 specification is available at `/api/docs/openapi.json`.
+
 ### Auth Endpoints
 
 | Method | Endpoint | Description | Access |
@@ -258,7 +266,7 @@ Copy `.env.example` and configure:
 ---
 
 ## 🛠️ Development
-
+ 
 ```bash
 # Backend (hot reload with ts-node)
 cd server && npm run dev
@@ -266,6 +274,56 @@ cd server && npm run dev
 # Frontend (Vite dev server)
 cd client && npm run dev
 ```
+
+---
+
+## 🧪 Automated Testing
+
+SmartLeads includes a fully automated unit and integration test suite written with the native Node test runner and TypeScript (`tsx --test`), guaranteeing fast and deterministic test execution without external bloat:
+
+```bash
+# Run all automated tests from root
+npm test
+
+# Run tests directly in server
+cd server && npm test
+
+# Run full CI check (backend build + frontend build + test suite)
+npm run ci
+```
+
+### Test Coverage Highlights:
+- **Auth & JWT Suite**: Token generation, verification, header parsing, expiry detection, and RBAC permission enforcement.
+- **Request Validation Suite**: Schema validations, regex email constraints, minimum password complexities, and enum checks.
+- **Security Middleware Suite**: Sliding window IP rate limiting, brute-force defense, and defensive security headers.
+- **Health & Error Suite**: Health status metrics, custom error handler formats, Mongoose duplicate key handling, and 404 responses.
+
+---
+
+## 🛡️ Security Hardening
+
+- **IP Rate Limiting**: Auth endpoints (`/api/auth/register`, `/api/auth/login`) are protected by an in-memory sliding-window rate limiter allowing a maximum of 30 requests per 15 minutes per IP.
+- **Security Headers**: Standard defensive headers applied to all responses:
+  - `X-Content-Type-Options: nosniff` (MIME sniffing prevention)
+  - `X-Frame-Options: SAMEORIGIN` (Clickjacking prevention)
+  - `X-XSS-Protection: 1; mode=block` (Cross-site scripting protection)
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Strict-Transport-Security` (HSTS enabled in production)
+  - `X-Powered-By` header stripped to prevent tech stack fingerprinting.
+
+---
+
+## 📅 7-Day Engineering Roadmap
+
+| Day | Date | Milestone & Focus | Status |
+|:---:|:---:|---|:---:|
+| **Day 1** | 08-Sep-2026 | Project Initialization, Express Configuration & MongoDB Atlas Setup | ✅ Complete |
+| **Day 2** | 09-Sep-2026 | User Model, Password Hashing, JWT Authentication & RBAC Middleware | ✅ Complete |
+| **Day 3** | 10-Sep-2026 | Lead CRUD APIs, Multi-Param Filtering, Pagination & CSV Export | ✅ Complete |
+| **Day 4** | 11-Sep-2026 | React 19 Frontend Setup, Glassmorphism UI, Auth Pages & Lead Table | ✅ Complete |
+| **Day 5** | 12-Sep-2026 | Docker Containerization, GitHub Actions CI/CD & Deployment Guide | ✅ Complete |
+| **Day 6** | **13-Sep-2026** | **Automated Testing Suite, Swagger/OpenAPI Docs & Security Hardening** | ✅ **Complete** |
+| **Day 7** | 14-Sep-2026 | Production Readiness Audit, Performance Optimization & Final Polish | ⏳ Upcoming |
 
 ---
 

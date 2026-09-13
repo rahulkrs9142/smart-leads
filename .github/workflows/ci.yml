@@ -30,6 +30,9 @@ jobs:
       - name: TypeScript Build Check
         run: npm run build
 
+      - name: Run Automated Test Suite
+        run: npm test
+
   frontend-check:
     name: Frontend Build & Typecheck
     runs-on: ubuntu-latest

@@ -1,0 +1,246 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "SmartLeads API Collection",
+    "description": "Official Postman collection for the SmartLeads Lead Management Dashboard API. Includes automated Bearer token extraction on Login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Sales Rep\",\n  \"email\": \"sales.demo@smartleads.io\",\n  \"password\": \"Password123!\",\n  \"role\": \"sales\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data && response.data.token) {",
+                  "    pm.environment.set('authToken', response.data.token);",
+                  "    console.log('authToken saved to environment!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@smartleads.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "List Leads (Paginated & Filterable)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads?page=1&limit=10&status=&source=&search=&sort=latest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "" },
+                { "key": "source", "value": "" },
+                { "key": "search", "value": "" },
+                { "key": "sort", "value": "latest" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Enterprise Tech Solutions\",\n  \"email\": \"contact@enterprisetech.com\",\n  \"source\": \"Website\",\n  \"status\": \"New\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"]
+            }
+          }
+        },
+        {
+          "name": "Get Single Lead",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Lead",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Contacted\",\n  \"source\": \"Website\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Lead (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        },
+        {
+          "name": "Export Leads CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/export/csv",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "export", "csv"]
+            }
+          }
+        },
+        {
+          "name": "Get Stats Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "stats", "overview"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Probes",
+      "item": [
+        {
+          "name": "System Health & Metrics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "Liveness Probe (Kubernetes/Docker)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/health/live",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "live"]
+            }
+          }
+        },
+        {
+          "name": "Readiness Probe (DB Connection)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "ready"]
+            }
+          }
+        },
+        {
+          "name": "Raw OpenAPI Spec",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/docs/openapi.json",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "docs", "openapi.json"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

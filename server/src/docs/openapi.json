@@ -117,6 +117,55 @@
         }
       }
     },
+    "/api/health/live": {
+      "get": {
+        "summary": "Liveness Probe",
+        "description": "Fast lightweight probe used by container orchestrators (Docker, Kubernetes, Render) to detect process health",
+        "responses": {
+          "200": {
+            "description": "Container process is alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "alive" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health/ready": {
+      "get": {
+        "summary": "Readiness Probe",
+        "description": "Deep readiness probe verifying active MongoDB connection state before routing traffic",
+        "responses": {
+          "200": {
+            "description": "Database is connected and server is ready to accept traffic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ready" },
+                    "database": { "type": "string", "example": "connected" },
+                    "uptime": { "type": "number", "example": 3600 },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database connection unavailable"
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "summary": "Register a new user",

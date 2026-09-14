@@ -4,8 +4,10 @@
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-smart--lead--client.vercel.app-6366f1?style=for-the-badge)](https://smart-lead-client.vercel.app)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/rahulkrs9142/smart-leads/actions)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-6366f1.svg?style=for-the-badge)](https://github.com/rahulkrs9142/smart-leads/releases)
+[![Postman](https://img.shields.io/badge/Postman-Collection_Ready-FF6C37?style=for-the-badge&logo=postman&logoColor=white)](./docs/SmartLeads.postman_collection.json)
 [![API Docs](https://img.shields.io/badge/OpenAPI_3.0-Interactive_Docs-85EA2D?style=for-the-badge&logo=openapiinitiative&logoColor=black)](https://smart-leads-backend.onrender.com/api/docs)
-[![Tests](https://img.shields.io/badge/Tests-Passing_22%2F22-success?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/rahulkrs9142/smart-leads)
+[![Tests](https://img.shields.io/badge/Tests-Passing_25%2F25-success?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/rahulkrs9142/smart-leads)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -313,6 +315,25 @@ npm run ci
 
 ---
 
+## 📬 Postman API Collection
+
+SmartLeads includes a ready-to-import Postman collection and environment for automated API exploration:
+
+1. **Import Collection**: Open Postman -> Click **Import** -> Select [`docs/SmartLeads.postman_collection.json`](./docs/SmartLeads.postman_collection.json).
+2. **Import Environment**: Select [`docs/SmartLeads.postman_environment.json`](./docs/SmartLeads.postman_environment.json).
+3. **Auto-Auth Extraction**: Running the **Login User** request automatically extracts and sets `{{authToken}}` in your environment, allowing all subsequent private lead requests to execute seamlessly without manual copy-pasting.
+
+---
+
+## 🏥 Production Health Probes & Graceful Shutdown
+
+For enterprise container deployments (Docker, Kubernetes, AWS ECS, Render):
+- **Liveness Probe** (`GET /api/health/live`): Fast ping checking if container process is responsive.
+- **Readiness Probe** (`GET /api/health/ready`): Deep check verifying MongoDB connection state (`readyState === 1`) before routing incoming network traffic.
+- **Graceful Shutdown**: On receiving `SIGTERM` or `SIGINT`, the Express server finishes all in-flight requests, cleanly disconnects Mongoose, and terminates with exit code 0 to prevent dropped requests during rolling deployments.
+
+---
+
 ## 📅 7-Day Engineering Roadmap
 
 | Day | Date | Milestone & Focus | Status |
@@ -322,8 +343,10 @@ npm run ci
 | **Day 3** | 10-Sep-2026 | Lead CRUD APIs, Multi-Param Filtering, Pagination & CSV Export | ✅ Complete |
 | **Day 4** | 11-Sep-2026 | React 19 Frontend Setup, Glassmorphism UI, Auth Pages & Lead Table | ✅ Complete |
 | **Day 5** | 12-Sep-2026 | Docker Containerization, GitHub Actions CI/CD & Deployment Guide | ✅ Complete |
-| **Day 6** | **13-Sep-2026** | **Automated Testing Suite, Swagger/OpenAPI Docs & Security Hardening** | ✅ **Complete** |
-| **Day 7** | 14-Sep-2026 | Production Readiness Audit, Performance Optimization & Final Polish | ⏳ Upcoming |
+| **Day 6** | 13-Sep-2026 | Automated Testing Suite, Swagger/OpenAPI Docs & Security Hardening | ✅ Complete |
+| **Day 7** | **14-Sep-2026** | **Production Readiness Probes, Postman Collection & v1.0.0 Release** | 🏆 **Complete** |
+
+> 🎉 **All 7 Days Successfully Completed & Shipped!**
 
 ---
 

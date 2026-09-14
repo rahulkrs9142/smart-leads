@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import leadRoutes from './routes/leadRoutes';
@@ -51,7 +52,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// Health check
+// Health check & metrics
 app.get('/api/health', (_req, res) => {
   res.status(200).json({
     success: true,
@@ -63,6 +64,41 @@ app.get('/api/health', (_req, res) => {
       heapTotal: `${Math.round(process.memoryUsage().heapTotal / 1024 / 1024)}MB`,
       heapUsed: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
     },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Liveness probe (Kubernetes / Docker container check)
+app.get('/api/health/live', (_req, res) => {
+  res.status(200).json({
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Readiness probe (Database & service dependencies check)
+app.get('/api/health/ready', (_req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  const dbStatusMap: Record<number, string> = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+
+  if (!isDbConnected) {
+    res.status(503).json({
+      status: 'unavailable',
+      database: dbStatusMap[mongoose.connection.readyState] || 'unknown',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+
+  res.status(200).json({
+    status: 'ready',
+    database: 'connected',
+    uptime: Math.round(process.uptime()),
     timestamp: new Date().toISOString(),
   });
 });
@@ -79,11 +115,13 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Start server
+let server: ReturnType<typeof app.listen> | null = null;
+
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
+    server = app.listen(PORT, () => {
       console.log(`\n🚀 Server running on port ${PORT}`);
       console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 API: http://localhost:${PORT}/api\n`);
@@ -95,5 +133,28 @@ const startServer = async (): Promise<void> => {
 };
 
 startServer();
+
+// Graceful shutdown handling
+const handleGracefulShutdown = async (signal: string) => {
+  console.log(`\n[${signal}] Initiating graceful shutdown...`);
+  if (server) {
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      try {
+        await mongoose.connection.close();
+        console.log('MongoDB connection closed.');
+        process.exit(0);
+      } catch (err) {
+        console.error('Error closing MongoDB connection:', err);
+        process.exit(1);
+      }
+    });
+  } else {
+    process.exit(0);
+  }
+};
+
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
 
 export default app;

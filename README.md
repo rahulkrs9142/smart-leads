@@ -22,7 +22,7 @@
 
 ---
 
-A full-stack **Lead Management Dashboard** built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js) using **TypeScript** throughout. Features JWT authentication, role-based access control, advanced filtering, CSV export, and a premium glassmorphism UI.
+A modern, production-grade **Lead Management Dashboard** built with the **MERN stack** (MongoDB, Express.js, React 19, Node.js) using **TypeScript** end-to-end. Engineered with strict compile-time type safety, JWT authentication, role-based access control (RBAC), high-performance filtering, and automated CI test pipelines. Designed with a premium dark/light glassmorphic UI to deliver an intuitive, enterprise-ready lead tracking experience.
 
 ---
 
